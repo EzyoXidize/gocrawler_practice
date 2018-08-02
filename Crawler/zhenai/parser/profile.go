@@ -7,7 +7,9 @@ import (
 	"practice/Crawler/model"
 )
 
-var heightRe = regexp.MustCompile(`<td><span class="label">身高：</span>([\d]+)CM</td>`)
+var heightRe = regexp.MustCompile(`<td><span class="label">身高：</span>([^<]+)</td>`)
+var genderRe = regexp.MustCompile(`<td><span class="label">性别：</span><span field="">([^<]+)</span></td>`)
+var weightRe = regexp.MustCompile(`<td><span class="label">体重：</span><span field="">([^<]+)</span></td>`)
 var incomeRe = regexp.MustCompile(`<td><span class="label">月收入：</span>([^<]+)</td>`)
 var ageRe  = regexp.MustCompile(` <td><span class="label">年龄：</span>([\d]+)岁</td>`)
 var marriageRe  =  regexp.MustCompile(`<td><span class="label">婚况：</span>([^<]+)</td>`)
@@ -21,18 +23,15 @@ func ParserProfile(contents []byte, name string) engine.ParseResult {
 	profile := model.Profile{}
 	profile.Name = name
 
+
 	age, err := strconv.Atoi(extractString(contents,ageRe))
 	if err != nil {
 		profile.Age = age
 	}
-
+	profile.Weight = extractString(contents,weightRe)
 	profile.Marriage = extractString(contents,marriageRe)
-
-	height,err := strconv.Atoi(extractString(contents,heightRe))
-	if err != nil {
-		profile.Height = height
-	}
-
+	profile.Gender = extractString(contents,genderRe)
+	profile.Height = extractString(contents,heightRe)
 	profile.Income = extractString(contents,incomeRe)
 	profile.Occupation = extractString(contents,occupationRe)
 	profile.Xinzuo= extractString(contents,xingzuoRe)

@@ -11,9 +11,15 @@ import (
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding/unicode"
 	"log"
+	"time"
 )
 
+
+var rateLimiter = time.Tick(10 * time.Millisecond)
+
 func Fetch(url string) ([]byte, error){
+
+	<- rateLimiter
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -23,7 +29,8 @@ func Fetch(url string) ([]byte, error){
 
 	if resp.StatusCode != http.StatusOK {
 
-		return nil, fmt.Errorf("wrong status code : %d", resp.StatusCode)
+		return nil,
+		fmt.Errorf("wrong status code : %d", resp.StatusCode)
 	}
 
 	bodyReader := bufio.NewReader(resp.Body)
